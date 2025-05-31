@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zener Diode Project - Front Page</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+    }
+
+    body::before {
+      content: '';
+      background: url('background.jpg') no-repeat center center/cover;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      filter: blur(10px) brightness(0.5);
+      
+    }
+
+    @keyframes parallaxScroll {
+      from { background-position: center 0px; }
+      to { background-position: center 100px; }
+    }
+
+    .content-box {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 40px 40px;
+      margin: 60px auto 30px auto;
+      border-radius: 15px;
+      max-width: 800px;
+      text-align: center;
+      animation: fadeIn 1s ease-in;
+      box-shadow: 0 0 25px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+      color: #61dafb;
+      animation: slideDown 1.2s ease-out;
+    }
+
+    .info {
+      font-size: 1.1rem;
+      margin: 10px 0;
+      animation: fadeInUp 0.8s ease-out both;
+    }
+
+    button {
+      margin-top: 30px;
+      padding: 12px 30px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #61dafb;
+      color: #000;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #21a1f1;
+    }
+
+  
+    
+  </style>
+</head>
+<body>
+  <div class="content-box">
+    <h1>Voltage and Current Characteristics of Zener Diode</h1>
+    <div class="info"><strong>College Name :</strong> Indore Institute of Science and Technology</div>
+    <div class="info"><strong>Branch :</strong> Computer Science Engineering</div>
+    <div class="info"><strong>Submitted by :</strong> Prakash Ray</div>
+    <div class="info"><strong>Section :</strong> A-3</div>
+    <div class="info"><strong>Enrollment No. :</strong> 0818CS241233</div>
+    <div class="info"><strong>Submitted to :</strong> Dr. Irfan Sir</div>
+    
+    <button onclick="location.href='objective.html'">Go to Project > </button>
+  </div>
+  
+
+
+</body>
+</html>

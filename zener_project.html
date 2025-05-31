@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Zener Diode V-I Characteristics Graph</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+  body {
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: 'Roboto Mono', monospace;
+    margin: 0;
+    padding: 20px;
+  }
+
+  body::before {
+  content: '';
+  background: url('background.jpg') no-repeat center center/cover;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  filter: blur(8px) brightness(0.6);
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    background: linear-gradient(90deg, #ffffff, #ffffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  table {
+    width: 100%;
+    max-width: 500px;
+    margin: 15px auto;
+    border-collapse: collapse;
+    background: #161b22;
+    box-shadow: 0 0 10px #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  caption {
+    background: #22272e;
+    padding: 8px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #61dafb;
+  }
+  th, td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid #30363d;
+  }
+  input[type="number"] {
+    width: 80px;
+    padding: 4px;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 4px;
+    color: #c9d1d9;
+  }
+  button {
+    display: block;
+    margin: 15px auto;
+    padding: 10px 25px;
+    background: #61dafb;
+    border: none;
+    border-radius: 25px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #0d1117;
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background: #21a1f1;
+  }
+  #canvas-container {
+    max-width: 800px;
+    margin: 30px auto;
+    position: relative;
+  }
+  canvas {
+    background: #161b22;
+    display: block;
+    margin: 0 auto;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+  }
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    color: #ffffff;
+    font-size: 0.9rem;
+  }
+</style>
+</head>
+<body>
+<h1>Zener Diode V-I Characteristics Graph</h1>
+<!-- Content remains the same -->
+<!-- Only heading glow and plot animation improvements were made -->
+
+
+<table id="forward-bias-table">
+  <caption>Forward Bias (Voltage in V, Current in mA)</caption>
+  <thead><tr><th>Voltage (V)</th><th>Current (mA)</th></tr></thead>
+  <tbody></tbody>
+  <tfoot>
+    <tr>
+      <td colspan="2"><button id="add-forward-row">Add Forward Bias Row</button></td>
+    </tr>
+  </tfoot>
+</table>
+
+<table id="reverse-bias-table">
+  <caption>Reverse Bias (Voltage in V, Current in µA)</caption>
+  <thead><tr><th>Voltage (V)</th><th>Current (µA)</th></tr></thead>
+  <tbody></tbody>
+  <tfoot>
+    <tr>
+      <td colspan="2"><button id="add-reverse-row">Add Reverse Bias Row</button></td>
+    </tr>
+  </tfoot>
+</table>
+
+<div id="canvas-container">
+  <canvas id="chart" width="800" height="600"></canvas>
+</div>
+
+<button id="plot-all">Plot Both Forward & Reverse Bias</button>
+
+<footer>
+  Project: Voltage and Current Characteristic of Zener Diode 
+</footer>
+
+<script>
+const canvas = document.getElementById('chart');
+const ctx = canvas.getContext('2d');
+const forwardTableBody = document.querySelector('#forward-bias-table tbody');
+const reverseTableBody = document.querySelector('#reverse-bias-table tbody');
+
+const width = canvas.width;
+const height = canvas.height;
+const margin = 60;
+const origin = { x: width / 2, y: height / 2 };
+const maxVoltage = 7;
+const maxCurrentForward = 5;
+const maxCurrentReverse = -120;
+
+let forwardPoints = [];
+let reversePoints = [];
+
+function addRow(tbody, isReverse = false) {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="number" step="0.01" ${isReverse ? 'max="0"' : 'min="0"'} /></td>
+    <td><input type="number" step="0.01" /></td>
+  `;
+  tbody.appendChild(tr);
+}
+
+document.getElementById('add-forward-row').onclick = () => addRow(forwardTableBody);
+document.getElementById('add-reverse-row').onclick = () => addRow(reverseTableBody, true);
+
+addRow(forwardTableBody);
+addRow(reverseTableBody, true);
+
+function getTableData(tbody) {
+  return [...tbody.querySelectorAll('tr')].map(row => {
+    const voltage = parseFloat(row.cells[0].querySelector('input').value);
+    const current = parseFloat(row.cells[1].querySelector('input').value);
+    return { voltage, current };
+  }).filter(d => !isNaN(d.voltage) && !isNaN(d.current));
+}
+
+function convertForwardPoint({ voltage, current }) {
+  let x = origin.x + (voltage / maxVoltage) * (width / 2 - margin);
+  let y = origin.y - (current / maxCurrentForward) * (height / 2 - margin);
+  return { x, y };
+}
+
+function convertReversePoint({ voltage, current }) {
+  let x = origin.x + (voltage / maxVoltage) * (width / 2 - margin);
+  let y = origin.y + (Math.abs(current) / Math.abs(maxCurrentReverse)) * (height / 2 - margin);
+  return { x, y };
+}
+
+function drawGrid() {
+  ctx.clearRect(0, 0, width, height);
+  ctx.strokeStyle = '#444c56';
+  ctx.lineWidth = 1;
+
+  for (let v = -maxVoltage; v <= maxVoltage; v++) {
+    let x = origin.x + (v / maxVoltage) * (width / 2 - margin);
+    ctx.beginPath();
+    ctx.moveTo(x, margin);
+    ctx.lineTo(x, height - margin);
+    ctx.stroke();
+    if (v !== 0) {
+      ctx.fillStyle = '#888';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(v + ' V', x, origin.y + 6);
+    }
+  }
+
+  ctx.fillStyle = '#61dafb';
+  ctx.font = '12px Roboto Mono';
+  ctx.lineWidth = 1.2;
+  ctx.strokeStyle = '#61dafb';
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'right';
+  for (let c = 1; c <= maxCurrentForward; c++) {
+    let yPos = origin.y - (c / maxCurrentForward) * (height / 2 - margin);
+    ctx.beginPath();
+    ctx.moveTo(origin.x - 6, yPos);
+    ctx.lineTo(origin.x, yPos);
+    ctx.stroke();
+    ctx.fillText(c + ' mA', origin.x - 10, yPos);
+  }
+
+  ctx.strokeStyle = '#ff6f61';
+  ctx.fillStyle = '#ff6f61';
+  ctx.textBaseline = 'top';
+  ctx.textAlign = 'right';
+  for (let c = 20; c <= Math.abs(maxCurrentReverse); c += 20) {
+    let yPos = origin.y + (c / Math.abs(maxCurrentReverse)) * (height / 2 - margin);
+    ctx.beginPath();
+    ctx.moveTo(origin.x - 6, yPos);
+    ctx.lineTo(origin.x, yPos);
+    ctx.stroke();
+    ctx.fillText('-' + c + ' µA', origin.x - 10, yPos);
+  }
+
+  ctx.strokeStyle = '#c9d1d9';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(margin, origin.y);
+  ctx.lineTo(width - margin, origin.y);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(origin.x, margin);
+  ctx.lineTo(origin.x, height - margin);
+  ctx.stroke();
+
+  ctx.fillStyle = '#c9d1d9';
+  ctx.font = '16px Roboto Mono';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'top';
+  ctx.fillText('Voltage (V)', width - margin, origin.y + 25);
+  ctx.save();
+  ctx.translate(origin.x - 45, margin);
+  ctx.rotate(-Math.PI / 2);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText('Current (A)', -20, -8);
+  ctx.restore();
+}
+
+function animatePlot(points, convertFunc, color, labelUnit, preservePlots = []) {
+  return new Promise(resolve => {
+    let i = 0;
+    function drawStep() {
+      drawGrid();
+      preservePlots.forEach(plot => {
+        ctx.strokeStyle = plot.color;
+        ctx.fillStyle = plot.color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        plot.points.forEach((pt, idx) => {
+          const p = plot.convertFunc(pt);
+          if (idx === 0) ctx.moveTo(p.x, p.y);
+          else ctx.lineTo(p.x, p.y);
+        });
+        ctx.stroke();
+        plot.points.forEach(pt => {
+          const p = plot.convertFunc(pt);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
+          ctx.fill();
+          ctx.fillText(`(${pt.voltage}, ${pt.current} ${plot.labelUnit})`, p.x + 5, p.y - 10);
+        });
+      });
+      if (i > 0) {
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let j = 0; j < i; j++) {
+          const p = convertFunc(points[j]);
+          if (j === 0) ctx.moveTo(p.x, p.y);
+          else ctx.lineTo(p.x, p.y);
+        }
+        ctx.stroke();
+        for (let j = 0; j < i; j++) {
+          const p = convertFunc(points[j]);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
+          ctx.fill();
+          ctx.fillText(`(${points[j].voltage}, ${points[j].current} ${labelUnit})`, p.x + 5, p.y - 10);
+        }
+      }
+      if (i < points.length) {
+        i++;
+        setTimeout(drawStep, 300);
+      } else {
+        resolve();
+      }
+    }
+    drawStep();
+  });
+}
+
+document.getElementById('plot-all').onclick = () => {
+  forwardPoints = getTableData(forwardTableBody);
+  reversePoints = getTableData(reverseTableBody);
+  forwardPoints.sort((a, b) => a.voltage - b.voltage);
+  reversePoints.sort((a, b) => a.voltage - b.voltage);
+  animatePlot(forwardPoints, convertForwardPoint, '#61dafb', 'mA')
+    .then(() => animatePlot(reversePoints, convertReversePoint, '#ff6f61', 'µA', [
+      { points: forwardPoints, convertFunc: convertForwardPoint, color: '#61dafb', labelUnit: 'mA' }
+    ]));
+};
+
+drawGrid();
+</script>
+</body>
+</html>
