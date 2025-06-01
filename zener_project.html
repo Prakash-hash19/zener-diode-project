@@ -280,55 +280,93 @@ function drawGrid() {
 
 function animatePlot(points, convertFunc, color, labelUnit, preservePlots = []) {
   return new Promise(resolve => {
-    let i = 0;
-    function drawStep() {
+    let currentIndex = 0;
+    let progress = 0;
+    const speed = 0.02;
+
+    function drawAllStatic() {
       drawGrid();
+
       preservePlots.forEach(plot => {
         ctx.strokeStyle = plot.color;
         ctx.fillStyle = plot.color;
         ctx.lineWidth = 2;
         ctx.beginPath();
-        plot.points.forEach((pt, idx) => {
-          const p = plot.convertFunc(pt);
-          if (idx === 0) ctx.moveTo(p.x, p.y);
-          else ctx.lineTo(p.x, p.y);
-        });
+        let converted = plot.points.map(plot.convertFunc);
+        for (let i = 0; i < converted.length - 1; i++) {
+          const cpX = (converted[i].x + converted[i + 1].x) / 2;
+          const cpY = (converted[i].y + converted[i + 1].y) / 2;
+          if (i === 0) ctx.moveTo(converted[i].x, converted[i].y);
+          ctx.quadraticCurveTo(converted[i].x, converted[i].y, cpX, cpY);
+        }
         ctx.stroke();
+
         plot.points.forEach(pt => {
           const p = plot.convertFunc(pt);
           ctx.beginPath();
           ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
           ctx.fill();
+          ctx.font = '10px Roboto Mono';
           ctx.fillText(`(${pt.voltage}, ${pt.current} ${plot.labelUnit})`, p.x + 5, p.y - 10);
         });
       });
-      if (i > 0) {
-        ctx.strokeStyle = color;
-        ctx.fillStyle = color;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        for (let j = 0; j < i; j++) {
-          const p = convertFunc(points[j]);
-          if (j === 0) ctx.moveTo(p.x, p.y);
-          else ctx.lineTo(p.x, p.y);
-        }
-        ctx.stroke();
-        for (let j = 0; j < i; j++) {
-          const p = convertFunc(points[j]);
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
-          ctx.fill();
-          ctx.fillText(`(${points[j].voltage}, ${points[j].current} ${labelUnit})`, p.x + 5, p.y - 10);
-        }
+    }
+
+    function draw() {
+      drawAllStatic();
+
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      const converted = points.map(convertFunc);
+      if (currentIndex === 0) {
+        ctx.moveTo(converted[0].x, converted[0].y);
       }
-      if (i < points.length) {
-        i++;
-        setTimeout(drawStep, 300);
+
+      for (let i = 0; i < currentIndex; i++) {
+        const cpX = (converted[i].x + converted[i + 1].x) / 2;
+        const cpY = (converted[i].y + converted[i + 1].y) / 2;
+        if (i === 0) ctx.moveTo(converted[i].x, converted[i].y);
+        ctx.quadraticCurveTo(converted[i].x, converted[i].y, cpX, cpY);
+      }
+
+      if (currentIndex < converted.length - 1) {
+        const start = converted[currentIndex];
+        const end = converted[currentIndex + 1];
+        const cpX = (start.x + end.x) / 2;
+        const cpY = (start.y + end.y) / 2;
+
+        const interpX = start.x + (cpX - start.x) * progress;
+        const interpY = start.y + (cpY - start.y) * progress;
+        ctx.quadraticCurveTo(start.x, start.y, interpX, interpY);
+      }
+
+      ctx.stroke();
+
+      for (let i = 0; i <= currentIndex; i++) {
+        const p = convertFunc(points[i]);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.font = '10px Roboto Mono';
+        ctx.fillText(`(${points[i].voltage}, ${points[i].current} ${labelUnit})`, p.x + 5, p.y - 10);
+      }
+
+      if (currentIndex < points.length - 1) {
+        progress += speed;
+        if (progress >= 1) {
+          progress = 0;
+          currentIndex++;
+        }
+        requestAnimationFrame(draw);
       } else {
         resolve();
       }
     }
-    drawStep();
+
+    draw();
   });
 }
 
