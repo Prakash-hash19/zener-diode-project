@@ -3,180 +3,273 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Project Front Page</title>
+  <title>Zener Diode Characteristics</title>
   <style>
     html, body {
-  margin: 0;
-  padding: 0;
-  height: auto;
-  min-height: 180vh;
-  overflow-y: auto;
-  scroll-behavior: smooth;
-}
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      scroll-behavior: smooth;
+      background: linear-gradient(-45deg, #ff6ec4, #7873f5, #aa00ff, #ff6ec4);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      overflow-x: hidden;
+    }
 
-.bias-section {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 40px;
-  margin-top: 40px;
-  padding-bottom: 80px; /* Space at the bottom */
-}
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
 
-  body {
-    background: linear-gradient(to right, #101b81, #253057, #171f59);
-    color: white;
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 150vh;
-    margin: 0;
-    text-align: center;
-    overflow: auto;
-    
-  }
-
-  body::before {
-  content: '';
-  background: url('background.jpg') no-repeat center center/cover;
+    .title-text {
+      position: relative;
+      pointer-events: auto;
+    }
+.title-block {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  filter: blur(8px) brightness(0.6);
-  }
-
-  h1 {
-    font-size: 2.5em;
-    color: #fffaed;
-    animation: slideDown 1.2s ease-out;
-  }
-
-  h2 {
-    font-size: 2em;
-    animation: slideDown 2s ease-out;
-  }
-
-   h3 {
-    font-size: 2em;
-    animation: slideDown 2.5s ease-out;
-  }
-
-  .info {
-    font-size: 1.2em;
-    margin: 10px 0;
-    opacity: 0;
-    animation: fadeInText 1s ease-out forwards;
-  }
-
-  .info:nth-of-type(1) { animation-delay: 0.5s; }
-  .info:nth-of-type(2) { animation-delay: 0.5s; }
-
-  button {
-    margin-top: 30px;
-    padding: 12px 30px;
-    font-size: 1em;
-    border: none;
-    border-radius: 8px;
-    background-color: #ffe29a;
-    color: #000;
-    cursor: pointer;
-    transition: 0.3s ease;
-    opacity: 0;
-    animation: fadeInText 1s ease-out forwards;
-    animation-delay: 1.7s;
-  }
-
-  button:hover {
-    background-color: #f5cd67;
-  }
-
-  @keyframes fadeInBody {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-
-  @keyframes slideDown {
-    0% { transform: translateY(-50px); opacity: 0; }
-    100% { transform: translateY(0); opacity: 1; }
-  }
-
-  @keyframes fadeInText {
-    to { opacity: 1; }
-  }
-
-  .bias-section {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 40px;
-  margin-top: 40px;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 20px 30px;
+  background: rgba(227, 20, 137, 0.301);
+  box-shadow: 0 5px 15px rgb(73, 19, 89);
+  border-radius: 15px;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  display: inline-block;
+  overflow: hidden;
+  pointer-events: none;
 }
 
-.bias {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 20px;
-  border-radius: 10px;
-  width: 320px;
+h2 {
   text-align: center;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease;
+  margin-top: 120px; /* increased from 80px to move it below the fixed title */
+  animation: slideDown 1s ease-out;
 }
 
-.bias:hover {
-  transform: scale(1.03);
+
+.title-block h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  color: white;
+  text-align: center;
+  white-space: nowrap; /* Prevent line break */
 }
 
-.bias img {
-  width: 100%;
-  border-radius: 6px;
-  margin-top: 10px;
-}
 
- footer {
-    text-align: center;
-    margin-top: 40px;
-    color: #1b0e01;
-    font-size: 0.9rem;
- }
+    .title-block .snowflake {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.7;
+      animation: snowFall linear infinite;
+      pointer-events: none;
+      z-index: 2;
+      filter: drop-shadow(0 0 2px white);
+    }
 
-</style>
+    @keyframes snowFall {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(60px); opacity: 0; }
+    }
 
+    h3 {
+      text-align: center;
+      margin-top: 80px;
+      animation: slideDown 1s ease-out;
+    }
+
+    .info {
+      font-size: 1.2em;
+      margin: 10px auto;
+      text-align: center;
+      max-width: 800px;
+      opacity: 0;
+      animation: fadeInText 1s ease-out forwards;
+    }
+
+    .info:nth-of-type(1) { animation-delay: 0.5s; }
+    .info:nth-of-type(2) { animation-delay: 0.7s; }
+
+    button {
+      margin: 30px auto;
+      display: block;
+      padding: 12px 30px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(to right, #a300fb, #5c026c);
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 0 15px #f0b4ff;
+      transition: 0.3s ease;
+      opacity: 0;
+      animation: fadeInText 1s ease-out forwards;
+      animation-delay: 1.5s;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #330058, #4a0049);
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #dd61ff;
+    }
+
+    @keyframes slideDown {
+      0% { transform: translateY(-30px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes fadeInText {
+      to { opacity: 1; }
+    }
+
+    .bias-section {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 40px;
+      padding: 40px 20px;
+    }
+
+    .bias {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 20px;
+      border-radius: 10px;
+      width: 320px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .bias:hover {
+      transform: scale(1.03);
+    }
+
+    .bias img {
+      width: 100%;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+
+    .footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            color: #ffffff;
+        }
+  </style>
 </head>
 <body>
 
-  <h1>Voltage and Current Characteristics of Zener Diode</h1>
+  <!-- Particle background -->
+  <div id="particles-js"></div>
+
+  <!-- Title Block with Snowflakes -->
+  <div class="title-block">
+    <div class="title-text">
+      <h1>Voltage and Current Characteristics of Zener Diode</h1>
+    </div>
+    <!-- Snowflakes go here -->
+    <script>
+      const titleBlock = document.querySelector('.title-block');
+      for (let i = 0; i < 20; i++) {
+        const flake = document.createElement('div');
+        flake.className = 'snowflake';
+        flake.style.left = `${Math.random() * 100}%`;
+        flake.style.top = `${Math.random() * 20}px`;
+        flake.style.animationDuration = `${Math.random() * 2 + 2}s`;
+        flake.style.animationDelay = `${Math.random() * 3}s`;
+        titleBlock.appendChild(flake);
+      }
+    </script>
+  </div>
+
+  <!-- Main Content -->
   <h2>•-------Objective-------•</h2>
-  <div class="info"> To determine the V-I characteristics of Zener diode by plotting a graph using Forward and Reverse Bias Reading</div>
+  <div class="info">To determine the V-I characteristics of Zener diode by plotting a graph using Forward and Reverse Bias Reading</div>
+
   <h3>•-------Theory-------•</h3>
   <div class="info">A Zener diode is a special type of diode designed to allow current to flow in the reverse direction<br>when a specific reverse voltage, called the Zener breakdown voltage, is reached.</div>
 
   <section class="bias-section">
-  <div class="bias">
-    <h2>Forward Bias of Zener Diode</h2>
-    <img src="forward-bias.png" alt="Forward Bias Zener Diode Circuit">
-    <p>In forward bias, the Zener diode behaves like a regular diode, allowing current to flow after the threshold voltage is reached.<br>----------------------------------------------------------<br>• Works like a regular diode.<br>• Current flows easily when the anode is connected to positive terminal and cathode connected to cathode.<br>• Conducts after a small threshold voltage (~0.7V for silicon).</p>
+    <div class="bias">
+      <h2>Forward Bias of Zener Diode</h2>
+      <img src="forward-bias.png" alt="Forward Bias Zener Diode Circuit">
+      <p>In forward bias, the Zener diode behaves like a regular diode, allowing current to flow after the threshold voltage is reached.<br>----------------------------------------------------------<br>• Works like a regular diode.<br>• Current flows easily when the anode is connected to positive terminal and cathode connected to cathode.<br>• Conducts after a small threshold voltage (~0.7V for silicon).</p>
+    </div>
+
+    <div class="bias">
+      <h2>Reverse Bias of Zener Diode</h2>
+      <img src="reverse-bias.png" alt="Reverse Bias Zener Diode Circuit">
+      <p>In reverse bias, the Zener diode does not conduct until the reverse voltage exceeds the breakdown voltage, after which it regulates the voltage.<br>----------------------------------------------------------<br>• Initially, very little current flows.<br>• When the reverse voltage reaches the Zener breakdown voltage (e.g., 5.6V, 9.1V, etc.) then diode starts conducting in reverse.</p>
+    </div>
+  </section>
+
+  <div class="info"><strong>Key Use:</strong> Voltage regulation, clipping circuits, over-voltage protection and reference elements in electronic circuits.</div>
+
+  <button onclick="location.href='zener_project.html'">Go to graph plotting &gt;</button>
+
+  <div class="footer">
+                <p>Engineering Physics Lab Manual</p>
+                <p>© 2024-25 Indore Institute of Science & Technology</p>
   </div>
 
-  <div class="bias">
-    <h2>Reverse Bias of Zener Diode</h2>
-    <img src="reverse-bias.png" alt="Reverse Bias Zener Diode Circuit">
-    <p>In reverse bias, the Zener diode does not conduct until the reverse voltage exceeds the breakdown voltage, after which it regulates the voltage.<br>----------------------------------------------------------<br>• Initially, very little current flows.<br>• When the reverse voltage reaches the Zener breakdown voltage (e.g., 5.6V, 9.1V, etc.) then diode starts conducting in reverse.</p>
-  </div>
-</section>
 
- <div class="info"><strong>Key Use:</strong> Voltage regulation, clipping circuits, over-voltage protection and reference elements in electronic circuits.</div>
-
-  
-  <button onclick="location.href='zener_project.html'">Go to graph plotting > </button>
-
+  <!-- Include particles.js -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    particlesJS("particles-js", {
+      particles: {
+        number: { value: 60, density: { enable: true, value_area: 800 } },
+        color: { value: "#ffffff" },
+        shape: {
+          type: "circle",
+          stroke: { width: 0, color: "#000000" },
+          polygon: { nb_sides: 5 }
+        },
+        opacity: {
+          value: 0.5,
+          random: true,
+          anim: { enable: false }
+        },
+        size: {
+          value: 3,
+          random: true,
+          anim: { enable: false }
+        },
+        move: {
+          enable: true,
+          speed: 1.5,
+          direction: "none",
+          random: false,
+          straight: false,
+          out_mode: "out",
+          bounce: false
+        }
+      },
+      interactivity: {
+        events: {
+          onhover: { enable: true, mode: "repulse" },
+          onclick: { enable: false }
+        }
+      },
+      retina_detect: true
+    });
+  </script>
 </body>
-<footer>
-  Project: Voltage and Current Characteristic of Zener Diode 
-</footer>
 </html>
