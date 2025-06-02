@@ -2,135 +2,412 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Zener Diode Project - Front Page</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       min-height: 100vh;
-      overflow-x: hidden;
-      overflow-y: auto;
-      scroll-behavior: smooth;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: #fff;
+      scroll-behavior: smooth;
+      background: linear-gradient(-45deg, #ff6ec4, #7873f5, #aa00ff, #ff6ec4);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      overflow-x: hidden;
+      position: relative;
+      z-index: 1;
     }
 
-    body::before {
-      content: '';
-      background: url('background.jpg') no-repeat center center/cover;
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Particles container behind all content */
+    #particles-js {
       position: fixed;
-      top: 0;
-      left: 0;
       width: 100%;
       height: 100%;
-      z-index: -1;
-      filter: blur(10px) brightness(0.5);
-      
+      top: 0;
+      left: 0;
+      z-index: 0; /* behind everything */
     }
 
-    @keyframes parallaxScroll {
-      from { background-position: center 0px; }
-      to { background-position: center 100px; }
+    /* Title block sized to content width and fixed at top center */
+    .title-block {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 20px 30px;
+      background: rgba(227, 20, 137, 0.301);
+      box-shadow: 0 5px 15px rgb(73, 19, 89);
+      border-radius: 15px;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      max-width: 90vw;
+      white-space: nowrap;
+
+      pointer-events: none; /* let mouse events pass through */
+    }
+
+    /* Enable pointer events only on text so it can be selected */
+    .title-block .title-text {
+      pointer-events: auto;
+    }
+
+    .snowflake {
+      position: absolute;
+      top: -1px;
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.7;
+      animation: fall linear infinite;
+      z-index: 1;
+      pointer-events: none;
+      filter: drop-shadow(0 0 3px #fff);
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(0) translateX(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100px) translateX(20px);
+        opacity: 0;
+      }
+    }
+
+    .title-block h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      text-decoration-color :white ;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: white ;
+      animation: gradientSlide 2s ease infinite;
+    }
+    .title-block h2 {
+      margin: 0;
+      font-size: 1rem;
+      text-align: center;
+      text-decoration-color :white ;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: white ;
+      animation: gradientSlide 2s ease infinite;
+    }
+
+    @keyframes gradientSlide {
+      0% { background-position: 0% }
+      100% { background-position: 100% }
+    }
+
+    /* Wrapper centers content horizontally and adds top padding to avoid overlap */
+    .wrapper {
+      display: flex;
+      justify-content: center;
+      min-height: calc(100vh - 100px);
+      padding-top: 160px; /* space for fixed title + gap */
+      padding-bottom: 40px; /* just a little bottom padding */
+      position: relative;
+      z-index: 10; /* above particles */
     }
 
     .content-box {
+      position: relative;
+      max-width: 850px;
+      width: calc(100% - 40px);
       background: rgba(0, 0, 0, 0.6);
-      padding: 40px 40px;
-      margin: 60px auto 30px auto;
-      border-radius: 15px;
-      max-width: 800px;
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+      text-align: left;
+      animation: fadeInUp 1.2s ease-out;
+      z-index: 1;
+      margin-top: 20px;  /* vertical gap */
+      margin-bottom: 60px;
+      color: white;
+    }
+
+    .content-box h1 {
+      margin: -10px 0 30px;
+      font-size: 1.6rem;
       text-align: center;
-      animation: fadeIn 1s ease-in;
-      box-shadow: 0 0 25px rgba(0,0,0,0.4);
+      text-decoration-color :white ;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: white ;
+      animation: gradientSlide 2s ease infinite;
     }
-
-    h1 {
-      font-size: 2.2rem;
-      margin-bottom: 20px;
-      color: #fffaed;
-      animation: slideDown 1.2s ease-out;
-    }
-
-.submitted-wrapper {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.submitted-container {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 1.1rem;
-}
-
-.submitted-names {
-  font-size: 1.1rem;
-  margin: 0;
-  padding-left: 20px;
-  list-style-type: disc;
-  text-align: left;
-}
-
-
-
-
 
     .info {
       font-size: 1.1rem;
       margin: 10px 0;
-      animation: fadeInUp 0.8s ease-out both;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+    .info:nth-child(1) { animation-delay: 0.3s; }
+    .info:nth-child(2) { animation-delay: 0.5s; }
+    .info:nth-child(3) { animation-delay: 0.7s; }
+    .info:nth-child(4) { animation-delay: 0.9s; }
+
+    .submitted-wrapper {
+      display: flex;
+      justify-content: right;
+      margin-top: 20px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 1s ease-out forwards;
+      animation-delay: 1.1s;
+    }
+
+    .submitted-container {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .submitted-names {
+      margin: 0;
+      padding-left: 20px;
+      list-style-type: disc;
+      text-align: left;
+    }
+
+    .submitted-names li {
+      margin-bottom: 4px;
+      transition: transform 0.3s ease;
+    }
+
+    .submitted-names li:hover {
+      transform: translateX(5px);
+      color: #ffd27f;
     }
 
     button {
-      margin-top: 30px;
-      padding: 12px 30px;
+      margin-top: 40px;
+      padding: 14px 35px;
       font-size: 1rem;
       border: none;
-      border-radius: 8px;
-      background-color: #ffe29a;
-      color: #000;
+      border-radius: 10px;
+      background: linear-gradient(to right, #a300fb, #5c026c);
+      color: #ffffff;
       cursor: pointer;
-      transition: 0.3s ease;
+      box-shadow: 0 0 15px #f0b4ff;
+      transition: all 0.4s ease;
+      animation: fadeInUp 1.2s ease-out forwards;
+      animation-delay: 1.5s;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     button:hover {
-      background-color: #f5cd67;
+      background: linear-gradient(to right, #330058, #4a0049);
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #dd61ff;
     }
 
-  
-    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% {
+        box-shadow: 0 0 15px 5px rgba(255,255,255,0.5);
+      }
+      50% {
+        box-shadow: 0 0 25px 12px rgba(255,255,255,0.9);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .title-block h1 {
+        font-size: 1.8rem;
+      }
+
+      .content-box {
+        margin: 90px 20px 30px;
+        padding: 25px;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .submitted-container {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    footer {
+      padding: 15px 10px;
+      text-align: center;
+      background : transparent;
+      color: #ffffffcc;
+      font-size: 0.95rem;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+      margin-top: 40px;
+      border-radius: 15px;
+      max-width: 850px;
+      margin-left: auto;
+      margin-right: auto;
+    }
   </style>
 </head>
 <body>
-  <div class="content-box">
-    <h1>Voltage and Current Characteristics of Zener Diode</h1>
-    <div class="info"><strong>College Name  :</strong>  Indore Institute of Science and Technology</div>
-    <div class="info"><strong>Branch  :</strong>  Computer Science Engineering</div>
-    <div class="info"><strong>Section  :</strong>  A-3</div>
-    <div class="info"><strong>Submitted to  :</strong>  Dr. Irfan Sir</div>
-      <div class="info submitted-wrapper">
-  <div class="submitted-container">
-    <strong>Submitted by :</strong>
-    <ul class="submitted-names">
-      <li>Piyush Deskmukh</li>
-    <li>Prakash Ray</li>
-    <li>Prabhakar Pandey</li>
-    <li>Payal Patidar</li>
-    <li>Pranav Joshi</li>
-    <li>Piyush Dubey</li>
-    <li>Piyush Pratap Singh</li>
-    <li>Payal Limanpure</li>
-    </ul>
+
+  <!-- Particles background -->
+  <div id="particles-js"></div>
+
+  <!-- Title fixed top, width auto -->
+  <div class="title-block">
+    <div class="title-text">
+      <h1>Indore Institute of Science & Technology</h1>
+      <h2>DEPARTMENT OF ENGINEERING PHYSICS</h2>
+    </div>
+
+    <!-- Snowflakes generated by JS -->
   </div>
-</div>
 
-    
-    <button onclick="location.href='objective.html'">Go to Project > </button>
+  <!-- Wrapper centers content -->
+  <div class="wrapper">
+    <div class="content-box">
+       <h1>•-----------V-I Characteristics of Zener Diode-----------•</h1>
+      <div class="info"><strong>Department :</strong> Computer Science Engineering</div>
+      <div class="info"><strong>Section :</strong> A-3</div>
+      <div class="info"><strong>Semester :</strong> 2nd Sem</div>
+      <div class="info"><strong>Submitted to:</strong> Dr. Irfan Sir</div>
+
+      <div class="submitted-wrapper">
+        <div class="submitted-container">
+          <strong>Submitted by:</strong>
+          <ul class="submitted-names">
+            <li>Piyush Deshmukh</li>
+            <li>Prakash Ray</li>
+            <li>Prabhakar Pandey</li>
+            <li>Payal Patidar</li>
+            <li>Pranav Joshi</li>
+            <li>Piyush Dubey</li>
+            <li>Piyush Pratap Singh</li>
+            <li>Payal Limanpure</li>
+          </ul>
+        </div>
+      </div>
+
+      <button onclick="location.href='objective.html'">Go to Project &gt;</button>
+    </div>
   </div>
-  
 
+  <!-- Scrolling footer -->
+  <footer>
+    Engineering Physics Lab Manual<br> &copy; 2024-25 Indore Institute of Science & Technology
+  </footer>
 
+  <script>
+    const titleBlock = document.querySelector('.title-block');
+
+    for (let i = 0; i < 20; i++) {
+      const flake = document.createElement('div');
+      flake.classList.add('snowflake');
+      flake.style.left = `${Math.random() * 100}%`;
+      flake.style.animationDuration = `${2 + Math.random() * 3}s`;
+      flake.style.animationDelay = `${Math.random() * 5}s`;
+      titleBlock.appendChild(flake);
+    }
+  </script>
+
+  <!-- Include Particles.js library -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+  <!-- Initialize particles -->
+  <script>
+    particlesJS("particles-js", {
+      "particles": {
+        "number": {
+          "value": 60,
+          "density": {
+            "enable": true,
+            "value_area": 800
+          }
+        },
+        "color": {
+          "value": "#ffffff"
+        },
+        "shape": {
+          "type": ["polygon"],
+          "stroke": {
+            "width": 0,
+            "color": "#000000"
+          },
+          "polygon": {
+            "nb_sides": 6
+          }
+        },
+        "opacity": {
+          "value": 0.9,
+          "random": true,
+          "anim": {
+            "enable": false
+          }
+        },
+        "size": {
+          "value": 8,
+          "random": true,
+          "anim": {
+            "enable": false
+          }
+        },
+        "move": {
+          "enable": true,
+          "speed": 3,
+          "direction": "none",
+          "random": true,
+          "straight": false,
+          "out_mode": "out",
+          "bounce": false
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": {
+            "enable": true,
+            "mode": "repulse"
+          },
+          "onclick": {
+            "enable": false
+          },
+          "resize": true
+        },
+        "modes": {
+          "repulse": {
+            "distance": 100,
+            "duration": 0.4
+          }
+        }
+      },
+      "retina_detect": true
+    });
+  </script>
 </body>
 </html>
